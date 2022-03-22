@@ -1,0 +1,16 @@
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  - publish
+
+build-job:
+  stage: build
+  script:
+    -  docker build . -t "482720962971.dkr.ecr.eu-central-1.amazonaws.com/project-1-frontend:$CI_COMMIT_SHORT_SHA"
+
+apply-job:
+  stage: publish
+  script:
+    - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+    - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+    - aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 482720962971.dkr.ecr.eu-central-1.amazonaws.com
+    - docker push 482720962971.dkr.ecr.eu-central-1.amazonaws.com/project-1-frontend:$CI_COMMIT_SHORT_SHA
